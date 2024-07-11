@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Svět Dobrodružství</title>
+    <style>
+        body {
+            display: flex;
+            font-family: Arial, sans-serif;
+        }
+        #map {
+            flex: 1;
+            padding: 10px;
+        }
+        #game {
+            flex: 2;
+            padding: 10px;
+        }
+        #info {
+            flex: 1;
+            padding: 10px;
+        }
+        table {
+            border-collapse: collapse;
+        }
+        td, th {
+            border: 1px solid black;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="map">
+        <h2>Mapa</h2>
+        <table id="map-table"></table>
+    </div>
+    <div id="game">
+        <h2>Hra</h2>
+        <div id="text-field">
+            <!-- Zde budou zobrazovány herní texty -->
+        </div>
+        <input type="text" id="command" placeholder="Zadejte příkaz">
+        <button onclick="sendCommand()">Odeslat</button>
+    </div>
+    <div id="info">
+        <h2>Hráči</h2>
+        <div id="players"></div>
+    </div>
+
+    <script>
+        function generateMap(size=10) {
+            const terrainTypes = ['les', 'hora', 'jezero', 'město', 'poušť'];
+            let gameMap = [];
+            for (let i = 0; i < size; i++) {
+                let row = [];
+                for (let j = 0; j < size; j++) {
+                    row.push(terrainTypes[Math.floor(Math.random() * terrainTypes.length)]);
+                }
+                gameMap.push(row);
+            }
+            return gameMap;
+        }
+
+        function createPlayer(name, race) {
+            return {
+                name: name,
+                race: race,
+                hunger: 100,
+                thirst: 100,
+                energy: 100,
+                health: 100,
+                money: 10,
+                inventory: [],
+                location: [0, 0],
+                stamina: 50
+            };
+        }
+
+        function updateMap(gameMap) {
+            const mapTable = document.getElementById('map-table');
+            mapTable.innerHTML = '';
+            gameMap.forEach(row => {
+                const tr = document.createElement('tr');
+                row.forEach(cell => {
+                    const td = document.createElement('td');
+                    td.innerText = cell;
+                    tr.appendChild(td);
+                });
+                mapTable.appendChild(tr);
+            });
+        }
+
+        function updatePlayers(players) {
+            const playersDiv = document.getElementById('players');
+            playersDiv.innerHTML = '';
+            players.forEach((player, index) => {
+                const playerDiv = document.createElement('div');
+                playerDiv.id = `player${index + 1}`;
+                playerDiv.innerHTML = `
+                    <h3>${player.name} (${player.race})</h3>
+                    <p>Hlad: ${player.hunger}</p>
+                    <p>Žízeň: ${player.thirst}</p>
+                    <p>Energie: ${player.energy}</p>
+                    <p>Zdraví: ${player.health}</p>
+                    <p>Peníze: ${player.money}</p>
+                    <p>Inventář: ${player.inventory}</p>
+                    <p>Lokace: ${player.location}</p>
+                    <p>Stamina: ${player.stamina}</p>
+                `;
+                playersDiv.appendChild(playerDiv);
+            });
+        }
+
+        function sendCommand() {
+            var command = document.getElementById("command").value;
+            document.getElementById("text-field").innerHTML += "<p>" + command + "</p>";
+            document.getElementById("command").value = "";
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const gameMap = generateMap();
+            updateMap(gameMap);
+
+            const players = [
+                createPlayer("Hráč 1", "Elf"),
+                createPlayer("Hráč 2", "Trpaslík"),
+                createPlayer("Hráč 3", "Člověk"),
+                createPlayer("Hráč 4", "Ork")
+            ];
+            updatePlayers(players);
+        });
+    </script>
+</body>
+</html>
